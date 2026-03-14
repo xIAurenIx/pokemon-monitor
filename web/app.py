@@ -197,23 +197,27 @@ def index():
 
 @app.route("/add", methods=["POST"])
 def add_product():
-    session = get_session()
-    product = Product(
-        product_id=f"PKM{str(uuid.uuid4())[:6].upper()}",
-        product_name=request.form["product_name"],
-        search_query=request.form["search_query"],
-        alert_threshold_percent=float(request.form.get("alert_threshold_percent", 10)),
-        category=request.form.get("category", "sealed"),
-        units_held=int(request.form.get("units_held") or 0),
-        purchase_price_gbp=float(request.form.get("purchase_price_gbp") or 0) or None,
-        notes=request.form.get("notes") or None,
-    )
-    session.add(product)
-    session.commit()
-    session.close()
-    products = get_session().query(Product).order_by(Product.created_at.desc()).all()
-    return render_template_string(HTML, products=products, message=f"✓ {product.product_name} is now being tracked.")
-
+    try:
+        session = get_session()
+        product = Product(
+            product_id=f"PKM{str(uuid.uuid4())[:6].upper()}",
+            product_name=request.form["product_name"],
+            search_query=request.form["search_query"],
+            alert_threshold_percent=float(request.form.get("alert_threshold_percent", 10)),
+            category=request.form.get("category", "sealed"),
+            units_held=int(request.form.get("units_held") or 0),
+            purchase_price_gbp=float(request.form.get("purchase_price_gbp") or 0) or None,
+            notes=request.form.get("notes") or None,
+        )
+        session.add(product)
+        session.commit()
+        session.close()
+        session2 = get_session()
+        products = session2.query(Product).order_by(Product.created_at.desc()).all()
+        session2.close()
+        return render_template_string(HTML, products=products, message=f"✓ {product.product_name} is now being tracked.")
+    except Exception as e:
+        return f"<pre style='padding:20px;color:red'>ADD ERROR: {str(e)}</pre>", 500
 
 @app.route("/toggle/<product_id>", methods=["POST"])
 def toggle_product(product_id):
