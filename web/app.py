@@ -8,7 +8,14 @@ import uuid
 import os
 
 app = Flask(__name__)
-PASSWORD = os.environ.get("UI_PASSWORD", "pokemon123")  # set this in Railway env vars
+PASSWORD = os.environ.get("UI_PASSWORD", "pokemon123")
+
+with app.app_context():
+    try:
+        from models.schema import create_tables
+        create_tables()
+    except Exception as e:
+        print(f"DB init error: {e}")
 
 HTML = """
 <!DOCTYPE html>
