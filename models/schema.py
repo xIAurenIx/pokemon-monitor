@@ -1,4 +1,17 @@
 from sqlalchemy import create_engine, Column, String, Float, Boolean, Integer, DateTime, Text
+import psycopg  # noqa: ensure psycopg3 is loaded
+```
+
+Actually, the simpler fix is just to change the driver in `requirements.txt`. Replace the entire `requirements.txt` with:
+```
+requests==2.31.0
+beautifulsoup4==4.12.3
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.9
+psycopg[binary]==3.1.18
+pg8000==1.31.1
+apscheduler==3.10.4
+flask==3.0.3
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
