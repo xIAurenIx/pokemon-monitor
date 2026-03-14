@@ -209,13 +209,13 @@ def add_product():
             purchase_price_gbp=float(request.form.get("purchase_price_gbp") or 0) or None,
             notes=request.form.get("notes") or None,
         )
+        product_name = product.product_name
         session.add(product)
         session.commit()
+        products = session.query(Product).order_by(Product.created_at.desc()).all()
+        product_list = list(products)
         session.close()
-        session2 = get_session()
-        products = session2.query(Product).order_by(Product.created_at.desc()).all()
-        session2.close()
-        return render_template_string(HTML, products=products, message=f"✓ {product.product_name} is now being tracked.")
+        return render_template_string(HTML, products=product_list, message=f"✓ {product_name} is now being tracked.")
     except Exception as e:
         return f"<pre style='padding:20px;color:red'>ADD ERROR: {str(e)}</pre>", 500
 
