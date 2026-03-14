@@ -177,10 +177,15 @@ def index():
           <button style="width:100%;padding:8px;background:#111;color:#fff;border:none;border-radius:4px;cursor:pointer">Enter</button>
         </form>
         """
-    session = get_session()
-    products = session.query(Product).order_by(Product.created_at.desc()).all()
-    session.close()
-    return render_template_string(HTML, products=products, message=None)
+    try:
+        from models.schema import create_tables
+        create_tables()
+        session = get_session()
+        products = session.query(Product).order_by(Product.created_at.desc()).all()
+        session.close()
+        return render_template_string(HTML, products=products, message=None)
+    except Exception as e:
+        return f"<pre style='padding:20px;color:red'>ERROR: {str(e)}</pre>", 500
 
 
 @app.route("/add", methods=["POST"])
