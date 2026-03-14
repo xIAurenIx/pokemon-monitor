@@ -61,9 +61,10 @@ class Transaction(Base):
 
 def get_engine():
     url = os.environ["DATABASE_URL"]
-    # Railway uses postgres:// but SQLAlchemy needs postgresql://
     if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
+        url = url.replace("postgres://", "postgresql+pg8000://", 1)
+    elif url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+pg8000://", 1)
     return create_engine(url)
 
 
